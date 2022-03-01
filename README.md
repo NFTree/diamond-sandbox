@@ -19,7 +19,8 @@ npx hardhat run scripts/deploy.js --network rinkeby
 4. In scripts/upgrade_facet.js past diamond address in step 2 in var DIAMOND_ADDR
 
 5. Run upgrade script:
-```npx hardhat run scripts/upgrade_facet.js --network rinkeby
+```
+npx hardhat run scripts/upgrade_facet.js --network rinkeby
 ```
 
 This is a reference implementation for [EIP-2535 Diamonds](https://github.com/ethereum/EIPs/issues/2535). To learn about other implementations go here: https://github.com/mudgen/diamond
