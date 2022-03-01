@@ -32,7 +32,8 @@ async function deployDiamond () {
   console.log('Deploying facets')
   const FacetNames = [
     'DiamondLoupeFacet',
-    'OwnershipFacet'
+    'OwnershipFacet',
+    'InitialFacet'
   ]
   const cut = []
   for (const FacetName of FacetNames) {
@@ -62,6 +63,7 @@ async function deployDiamond () {
     throw Error(`Diamond upgrade failed: ${tx.hash}`)
   }
   console.log('Completed diamond cut')
+  console.log('Diamond deployed (copy me):', diamond.address)
   return diamond.address
 }
 
