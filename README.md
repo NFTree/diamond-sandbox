@@ -2,20 +2,24 @@
 
 ## To run
 
-0. Create .env file and add private key for rinkeby and etherscan key. Refer to .env.example for var names
-
-1. Deploy the initial diamond and facets:
-```npx 
-hardhat run scripts/deploy.js --network rinkeby
+0. Install dependencies
+```
+npm install
 ```
 
-2. Copy the diamond address
+1. Create .env file and add private key for rinkeby and etherscan key. Refer to .env.example for var names
 
-3. In scripts/upgrade_facet.js past diamond address in step 2 in var DIAMOND_ADDR
+2. Deploy the initial diamond and facets:
+```
+npx hardhat run scripts/deploy.js --network rinkeby
+```
 
-4. Run upgrade script:
-```npx 
-hardhat run scripts/upgrade_facet.js --network rinkeby
+3. Copy the diamond address
+
+4. In scripts/upgrade_facet.js past diamond address in step 2 in var DIAMOND_ADDR
+
+5. Run upgrade script:
+```npx hardhat run scripts/upgrade_facet.js --network rinkeby
 ```
 
 This is a reference implementation for [EIP-2535 Diamonds](https://github.com/ethereum/EIPs/issues/2535). To learn about other implementations go here: https://github.com/mudgen/diamond
