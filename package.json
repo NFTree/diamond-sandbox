@@ -26,6 +26,13 @@
     "hardhat": "^2.4.1",
     "prettier": "^2.3.2",
     "prettier-plugin-solidity": "^1.0.0-beta.13",
-    "standard": "^16.0.3"
+    "standard": "^16.0.3",
+    "ts-node": "^10.6.0"
+  },
+  "dependencies": {
+    "@gnosis.pm/safe-deployments": "^1.10.0",
+    "@gnosis.pm/zodiac": "^1.0.3",
+    "@typechain/hardhat": "^4.0.0",
+    "hardhat-deploy": "^0.10.5"
   }
 }
