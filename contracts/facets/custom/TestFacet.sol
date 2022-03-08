@@ -8,13 +8,18 @@ contract TestFacet {
     event TestEvent(address something);
 
     uint public value;
+    uint internal value2;
+    uint internal value3;
 
-    constructor() {
-        value = 0;
+
+    constructor(uint hello) {
+        value = hello;
+        value2 = 123;
+        value3 = 987;
     }
 
     function function1() external view returns (uint) {
-        return value;
+        return value2;
     }
 
     function getResponse() external pure returns (string memory) {

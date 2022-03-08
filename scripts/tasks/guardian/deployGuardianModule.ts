@@ -1,7 +1,7 @@
 import "@nomiclabs/hardhat-ethers";
 import { task, types } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { FacetCutAction, getSelectors } from "../libraries/diamond";
+import { FacetCutAction, getSelectors } from "../../libraries/diamond";
 
 //Deploys our guardian via diamond standard
 task("deployGuardianModule", "Deploy guardian module").setAction(async (_, hre: HardhatRuntimeEnvironment) => {

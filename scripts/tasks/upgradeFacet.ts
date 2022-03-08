@@ -40,6 +40,8 @@ task("upgradeFacet", "Deploy guardian module")
     else {
         selectors = getSelectors(facet);
     }
+    //@ts-ignore
+    console.log(selectors.map(s=>s));
     let tx = await diamondCutFacet.diamondCut(
       [{
         facetAddress: facet.address,
