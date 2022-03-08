@@ -14,18 +14,9 @@ npm install
 
 1. Create .env file and add private key for rinkeby and etherscan key. Refer to .env.example for var names
 
-2. Deploy the initial diamond and facets:
+2. Deploy the guardian/diamond contract and add the Sentinel facets. Refer to ./deploy/000-deploy.ts for the tasks being run.
 ```
-npx hardhat run scripts/deploy.js --network rinkeby
-```
-
-3. Copy the diamond address
-
-4. In scripts/upgrade_facet.js past diamond address in step 2 in var DIAMOND_ADDR
-
-5. Run upgrade script:
-```
-npx hardhat run scripts/upgrade_facet.js --network rinkeby
+npx hardhat deploy --network rinkeby
 ```
 
 This is a reference implementation for [EIP-2535 Diamonds](https://github.com/ethereum/EIPs/issues/2535). To learn about other implementations go here: https://github.com/mudgen/diamond
