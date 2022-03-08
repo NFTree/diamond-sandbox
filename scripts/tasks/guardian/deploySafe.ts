@@ -9,12 +9,13 @@ interface TaskArgs {
 }
 
 //Deploys a gnosis safe
-task("deploySafeTest", "Creates a gnosis safe wallet")
+task("deploySafe", "Creates a gnosis safe wallet")
     .addParam("name", "Name for this safe", undefined, types.string)
     .setAction(async (args: TaskArgs, hre: HardhatRuntimeEnvironment) => {
         const { ethers } = hre;
         const [caller] = await ethers.getSigners();
 
+        // 1) Deploy our safe factory to deploy/initialize safes
         console.log("Deploying SafeFactory...")
         const SafeFactory = await ethers.getContractFactory('SafeFactory')
         const safeFactory = await SafeFactory.deploy(
@@ -25,14 +26,16 @@ task("deploySafeTest", "Creates a gnosis safe wallet")
         await safeFactory.deployed()
         console.log('SafeFactory deployed:', safeFactory.address)
 
+        console.log('');
+        console.log("Creating safe");
         const salt = ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["string", "address[]"], [args.name, [caller.address]]));
-        console.log("Creating safe")
         const safeTxn = await safeFactory.createSafe(salt);
         let safeReceipt = await safeTxn.wait();
         if (!safeReceipt.status) {
             throw Error(`Gnosis safe create failed: ${safeTxn.hash}`)
         }
 
+        console.log('');
         console.log(`Finish creating gnosis safe ${safeReceipt.events[2].address}`)
         return safeReceipt.events[2].address;
     });

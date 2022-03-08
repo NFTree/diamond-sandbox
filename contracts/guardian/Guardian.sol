@@ -6,6 +6,8 @@ import "@gnosis.pm/zodiac/contracts/core/Module.sol";
 import {LibDiamond} from "../libraries/LibDiamond.sol";
 import {IDiamondCut} from "../interfaces/IDiamondCut.sol";
 
+// Guardian diamond contract
+// we inherit Module so it can be added to Gnosis safes via zodiac
 contract Guardian is Module {
     constructor(address _contractOwner, address _diamondCutFacet) payable {
         //Boilerplate for diamond.sol 
@@ -39,7 +41,7 @@ contract Guardian is Module {
         transferOwnership(_owner);
     }
 
-    //Boilerplate for diamond.sol
+    // Boilerplate for diamond.sol
     // Find facet for function that is called and execute the
     // function if a facet is found and return any value.
     fallback() external payable {

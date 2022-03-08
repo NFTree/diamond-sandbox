@@ -11,13 +11,16 @@ task("deployGuardianModule", "Deploy guardian module").setAction(async (_, hre: 
     console.log("Using the account:", caller.address);
   
     // 1) deploy DiamondCutFacet
+    // This exposes functions to add/update/remove functions on our diamond
+    console.log('')
     console.log("Deploying DiamondCutFacet...")
     const DiamondCutFacet = await ethers.getContractFactory('DiamondCutFacet')
     const diamondCutFacet = await DiamondCutFacet.deploy()
     await diamondCutFacet.deployed()
     console.log('DiamondCutFacet deployed:', diamondCutFacet.address)
   
-    // 2) deploy Guardian module
+    // 2) deploy Guardian module/diamond contract
+    console.log('')
     console.log(`Deploying guardian module...`);
     const Guardian = await ethers.getContractFactory('Guardian');
     const guardian = await Guardian.deploy(caller.address, diamondCutFacet.address);
@@ -27,6 +30,7 @@ task("deployGuardianModule", "Deploy guardian module").setAction(async (_, hre: 
     // 3) deploy DiamondInit -- boilerplate
     // DiamondInit provides a function that is called when the diamond is upgraded to initialize state variables
     // Read about how the diamondCut function works here: https://eips.ethereum.org/EIPS/eip-2535#addingreplacingremoving-functions
+    console.log('')
     console.log('Deploying DiamondInit...')
     const DiamondInit = await ethers.getContractFactory('DiamondInit')
     const diamondInit = await DiamondInit.deploy()
@@ -34,10 +38,11 @@ task("deployGuardianModule", "Deploy guardian module").setAction(async (_, hre: 
     console.log('DiamondInit deployed:', diamondInit.address)
   
     // 4) deploy facets
+    // Deploy some facets we need to add to our diamond
     console.log('')
     console.log('Deploying facets')
     const FacetNames = [
-      'DiamondLoupeFacet', // Exposes how to read funcito ndata
+      'DiamondLoupeFacet', // Exposes how to read/list function/facet data added to this diamond
       'OwnershipFacet', // Handles ownership stuff
     ]
     const cut = []
@@ -67,7 +72,11 @@ task("deployGuardianModule", "Deploy guardian module").setAction(async (_, hre: 
     if (!receipt.status) {
       throw Error(`Diamond upgrade failed: ${tx.hash}`)
     }
+
+    console.log('')
     console.log('Completed diamond cut')
+
+    console.log('')
     console.log(`Guardian deployed at: ${guardian.address}`)
     return guardian.address;
   });

@@ -3,9 +3,7 @@ export * from "./addFacet";
 export * from "./tasks";
 export * from "./testDelegateCall";
 export * from "./upgradeFacet";
-export * from "./createAndSetupSafe";
-export * from "./createAndSetupSafe2";
 export * from "./deployFacet";
-export * from "./guardian/deploySafeTest";
+export * from "./guardian/deploySafe";
 export * from "./guardian/addSentinelFacet";
-export * from "./test/test"
+export * from "./test/testSentinel"
