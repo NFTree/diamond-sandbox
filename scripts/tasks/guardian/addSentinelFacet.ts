@@ -25,10 +25,19 @@ task("addSentinelFacet", "Adds Sentinel Facet to a guardian module")
 
         // 1) Deploy our the contract
         const SentinelFacet = await ethers.getContractFactory('SentinelFacet');
-        const sentinel = await SentinelFacet.deploy(adminaddr);
+        // const sentinel = await SentinelFacet.deploy(adminaddr);
+        const sentinel = await SentinelFacet.deploy();
         await sentinel.deployed();
         // await sentinel.initialize(adminaddr);
         console.log(`Deployed facet to ${sentinel.address}`);
+
+        // 1a) initialize the sentinel
+        let initTx = await sentinel.initialize(adminaddr);
+
+        let initReceipt = await initTx.wait();
+        if (!initReceipt.status) {
+            throw Error(`Sentinel init failed: ${initTx.hash}`)
+        }
 
         // 2) Add facet to guardian
         console.log('');
