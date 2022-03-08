@@ -14,7 +14,12 @@ npm install
 
 1. Create .env file and add private key for rinkeby and etherscan key. Refer to .env.example for var names
 
-2. Deploy the guardian/diamond contract and add the Sentinel facets. Refer to ./deploy/000-deploy.ts for the tasks being run.
+2. Compile contracts.
+```
+npx hardhat compile
+```
+
+3. Deploy the guardian/diamond contract and add the Sentinel facets. Refer to ./deploy/000-deploy.ts for the tasks being run.
 ```
 npx hardhat deploy --network rinkeby
 ```

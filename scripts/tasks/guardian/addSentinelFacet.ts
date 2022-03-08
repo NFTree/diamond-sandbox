@@ -27,7 +27,7 @@ task("addSentinelFacet", "Adds Sentinel Facet to a guardian module")
         const SentinelFacet = await ethers.getContractFactory('SentinelFacet');
         const sentinel = await SentinelFacet.deploy(adminaddr);
         await sentinel.deployed();
-        await sentinel.initialize(adminaddr);
+        // await sentinel.initialize(adminaddr);
         console.log(`Deployed facet to ${sentinel.address}`);
 
         // 2) Add facet to guardian
