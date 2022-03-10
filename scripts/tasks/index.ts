@@ -6,4 +6,4 @@ export * from "./upgradeFacet";
 export * from "./deployFacet";
 export * from "./guardian/deploySafe";
 export * from "./guardian/addSentinelFacet";
-export * from "./test/testSentinel"
+export * from "./test/testSentinel";

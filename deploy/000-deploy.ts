@@ -16,9 +16,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   //4. run some tests on our deployed guardian/facet
   await hre.run("testSentinelViaGuardian", {guardianaddr: guardianAddress});
-  console.log('');
-  await hre.run("testSentinelViaFacet", {facetaddr: facetAddress});
-
 };
 
 export default func;

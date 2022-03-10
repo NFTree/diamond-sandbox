@@ -20,6 +20,7 @@ const {
  */
 export default {
   solidity: '0.8.11',
+  defaultNetwork: 'rinkeby',
   networks: {
     rinkeby: {
       url: `https://rinkeby.infura.io/v3/fa64c332f51842a1af6e422630ebf1dc`,

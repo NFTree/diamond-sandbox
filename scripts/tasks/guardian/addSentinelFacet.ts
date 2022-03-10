@@ -31,14 +31,6 @@ task("addSentinelFacet", "Adds Sentinel Facet to a guardian module")
         // await sentinel.initialize(adminaddr);
         console.log(`Deployed facet to ${sentinel.address}`);
 
-        // 1a) initialize the sentinel
-        let initTx = await sentinel.initialize(adminaddr);
-
-        let initReceipt = await initTx.wait();
-        if (!initReceipt.status) {
-            throw Error(`Sentinel init failed: ${initTx.hash}`)
-        }
-
         // 2) Add facet to guardian
         console.log('');
         console.log(`Adding facet ${sentinel.address} to guardian`);
@@ -64,18 +56,19 @@ task("addSentinelFacet", "Adds Sentinel Facet to a guardian module")
 
         console.log(`Completed diamond cut upgrade adding Sentinel Facet as ${sentinel.address}`);
 
+        // 3) initialize the sentinel
+        // NOTE: we do this in the context of the guardian address since we're using diamond storage
+        console.log(`Initializing facet ${sentinel.address}`);
+        const guardian = await ethers.getContractAt('SentinelFacet', guardianaddr);
+        let initTx = await guardian.initialize(adminaddr);
+
+        let initReceipt = await initTx.wait();
+        if (!initReceipt.status) {
+            throw Error(`Sentinel init failed: ${initTx.hash}`)
+        }
+        console.log('Done initialize');
+
         return sentinel.address;
-    });
-
-//Deploys our guardian via diamond standard
-task("testSentinelFacet", "Adds Sentinel Facet to a guardian module")
-    .setAction(async (args: AddFacetArgs, hre: HardhatRuntimeEnvironment) => {
-        const { ethers } = hre;
-        const [caller] = await ethers.getSigners();
-
-        const sentinel = await ethers.getContractAt("SentinelFacet", "0xB58d58926cC647B7c2Df072FDC70F5f82CB00c02");
-        let result = await sentinel.isAdmin("0x607dd6919b920309BF760376237C9b23A42979dA");
-        console.log(result.toString())
     });
 
 export { };

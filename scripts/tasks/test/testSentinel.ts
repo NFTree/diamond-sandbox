@@ -21,6 +21,18 @@ task("testSentinelViaGuardian", "Calls the guardian contract to get number of ad
         console.log(`Sending getRoleMemberCount() for admin role to ${guardianaddr}`);
         let result = await contract.getRoleMemberCount("0x0000000000000000000000000000000000000000000000000000000000000000");
         console.log(`Number of admins assigned: ${result.toString()}`);
+
+        result = await contract.getStuff();
+        console.log(result);
+
+        result = await contract.getStuf2();
+        console.log(result);
+
+        result = await contract.getRoleStuff();
+        console.log(result);
+
+        result = await contract.getRoleStuff2();
+        console.log(result);
     });
 
 interface Test2Args {
@@ -43,4 +55,15 @@ task("testSentinelViaFacet", "Calls the facet contract directly to get number of
         let result = await contract.getRoleMemberCount("0x0000000000000000000000000000000000000000000000000000000000000000");
         console.log(`Number of admins assigned: ${result.toString()}`);
 
+        result = await contract.getStuff();
+        console.log(result);
+
+        result = await contract.getStuf2();
+        console.log(result);
+
+        result = await contract.getRoleStuff();
+        console.log(result);
+
+        result = await contract.getRoleStuff2();
+        console.log(result);
     });
