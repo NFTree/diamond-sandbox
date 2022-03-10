@@ -12,12 +12,15 @@ contract SentinelFacet is AccessControlEnumerableUpgradeable {
     using AccessControlEnumerableStorage for AccessControlEnumerableStorage.Layout;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
+    // Unsure if this will clash with any storage in other facets
     bytes32 public constant GUARDIAN_ROLE = keccak256("GUARDIAN");
 
     constructor() {}
 
     // per https://www.npmjs.com/package/@gnus.ai/contracts-upgradeable-diamond
     // we call initialize here
+    // we might need to name this somehting else
+    // if there are multiple upgradeable facets, this will potentially clash signature
     function initialize(address root) public initializer {
         // Unsure if this necessary since theres no real logic associated with this
         __AccessControlEnumerable_init();
