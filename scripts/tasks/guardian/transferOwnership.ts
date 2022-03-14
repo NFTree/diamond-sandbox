@@ -17,13 +17,14 @@ task("transferOwnership", "Deploy guardian module")
 
         const { safe, guardianaddr } = args;
 
+        console.log(`Transferring ownership of guardian to ${safe}`)
         const guardian = await ethers.getContractAt('OwnershipFacet', guardianaddr);
 
         let tx
         let receipt
         // call to init function
         tx = await guardian.transferOwnership(safe);
-        console.log('Diamond cut tx: ', tx.hash)
+        console.log('tx: ', tx.hash)
         receipt = await tx.wait()
         if (!receipt.status) {
             throw Error(`Diamond upgrade failed: ${tx.hash}`)

@@ -43,13 +43,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   console.log('');
   console.log(`guardian: ${guardianAddress}`);
   console.log(`safe: ${safeAddress}`);
-
-  //7. Change ownership to the safe for the module
-  await hre.run("transferOwnership", { guardianaddr: guardianAddress, safe: safeAddress });
-
-  console.log('');
-  console.log(`guardian: ${guardianAddress}`);
-  console.log(`safe: ${safeAddress}`);
 };
 
 export default func;
