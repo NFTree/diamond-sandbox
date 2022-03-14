@@ -6,10 +6,11 @@ import { FacetCutAction, getSelectors } from "../libraries/diamond";
 interface AddFacetArgs {
   guardianaddr: string,
   facetname: string,
-  function: string
+  function: string // Function name to upgrade
 }
 
-//Deploys our guardian via diamond standard
+//And example on how to upgrade a facet
+//if function param is not provided, all functions in the facet will be added
 task("upgradeFacet", "Deploy guardian module")
   .addParam("guardianaddr", "Guardian contract address to add function", undefined, types.string)
   .addParam("facetname", "Name of the facet to add", undefined, types.string)
@@ -33,6 +34,7 @@ task("upgradeFacet", "Deploy guardian module")
     const diamondCutFacet = await ethers.getContractAt('DiamondCutFacet', args.guardianaddr);
     
     let selectors;
+    //Get specified function signature if exists
     if(args.function) {
         //@ts-ignore
         selectors = getSelectors(facet).get([args.function]);
@@ -40,6 +42,8 @@ task("upgradeFacet", "Deploy guardian module")
     else {
         selectors = getSelectors(facet);
     }
+    //@ts-ignore
+    console.log(selectors.map(s=>s));
     let tx = await diamondCutFacet.diamondCut(
       [{
         facetAddress: facet.address,

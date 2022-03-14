@@ -7,7 +7,7 @@ interface TaskArgs {
   facetname: string
 }
 
-//Deploys our guardian via diamond standard
+//Deploys our facet contract
 task("deployFacet", "Deploy facets")
 .addParam("facetname", "Guardian contract address to add function", undefined, types.string)
 

@@ -4,11 +4,11 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { FacetCutAction, getSelectors } from "../libraries/diamond";
 
 interface AddFacetArgs {
-  guardianaddr: string,
-  facetname: string,
+  guardianaddr: string, // The diamond contract
+  facetname: string, // Contract name to deploy and add to our diamond
 }
 
-//Deploys our guardian via diamond standard
+//This is an example on how to add a facet to a diamond
 task("addFacet", "Deploy guardian module")
   .addParam("guardianaddr", "Guardian contract address to add function", undefined, types.string)
   .addParam("facetname", "Name of the facet to add", undefined, types.string)
