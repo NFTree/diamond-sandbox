@@ -10,19 +10,13 @@ import "../facets/custom/sentinel/ISentinelFacet.sol";
 // Guardian diamond contract
 // we inherit Module so it can be added to Gnosis safes via zodiac
 contract Guardian is Module {
-    modifier canCall() {
-        bool isGuardian = ISentinelFacet(address(this)).isGuardian(msg.sender);
-        bool isAdmin = ISentinelFacet(address(this)).isAdmin(msg.sender);
-        bool isThis = address(this) == msg.sender;
-        require(isGuardian || isAdmin || isThis, "Not authorized to call");
-        _;
-    }
 
     constructor(address _contractOwner, address _diamondCutFacet, address safe) payable {
         //Boilerplate for diamond.sol
         LibDiamond.setContractOwner(_contractOwner);
 
         // Add the diamondCut external function from the diamondCutFacet
+        // This will add functions that can modify facets later
         IDiamondCut.FacetCut[] memory cut = new IDiamondCut.FacetCut[](1);
         bytes4[] memory functionSelectors = new bytes4[](1);
         functionSelectors[0] = IDiamondCut.diamondCut.selector;
@@ -41,6 +35,7 @@ contract Guardian is Module {
         __Ownable_init();
         address _owner = abi.decode(initializeParams, (address));
 
+        // This sets where calls from modules are fowarded (eg: calls fowarded to the safe)
         setAvatar(_owner);
         setTarget(_owner);
         transferOwnership(_owner);
@@ -78,13 +73,16 @@ contract Guardian is Module {
         }
     }
 
-    // We need to expose this since exec() in Module is internal
+    // We need to expose this since exec() in Module is internal so our ArbitrateFacet can call itself
     function execute(
         address _to,
         uint256 _value,
         bytes memory _data,
         Enum.Operation _operation
-    ) public canCall returns (bool success) {
+    ) public returns (bool success) {
+        // Only allow this to call itself since any call to a facet should be to the guardian contract address
+        require(address(this) == msg.sender, 'Call only allowed from guardian or facet contracts');
+        
         success = exec(_to, _value, _data, _operation);
         return success;
     }

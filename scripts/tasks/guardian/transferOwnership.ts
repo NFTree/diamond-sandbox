@@ -30,11 +30,8 @@ task("transferOwnership", "Deploy guardian module")
         }
 
         console.log('')
-        console.log('Completed diamond cut')
-
-        console.log('')
-        console.log(`Guardian deployed at: ${guardian.address}`)
-        return guardian.address;
+        console.log(`Transferred ownership of guardian at ${guardian.address} to ${safe}`);
+        console.log(`to safe ${safe}`);
     });
 
 export { };

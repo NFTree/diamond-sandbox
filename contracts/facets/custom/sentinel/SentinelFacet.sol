@@ -10,10 +10,13 @@ import "./ISentinelFacet.sol";
 
 // This contract gives permissions to certain contracts.
 // This can be used with other contracts to restrict permissions to a set of addresses
-
 contract SentinelFacet is ISentinelFacet, AccessControlEnumerableUpgradeable {
     using AccessControlEnumerableStorage for AccessControlEnumerableStorage.Layout;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
+
+    event GuardianAdded (
+        address addedGuardian
+    );
 
     // Unsure if this will clash with any storage in other facets
     bytes32 public constant GUARDIAN_ROLE = keccak256("GUARDIAN");
@@ -51,6 +54,8 @@ contract SentinelFacet is ISentinelFacet, AccessControlEnumerableUpgradeable {
 
     function addGuardian(address account) public virtual override onlyAdmin {
         grantRole(GUARDIAN_ROLE, account);
+
+        emit GuardianAdded(account);
     }
 
     function removeGuardian(address account) public virtual override onlyAdmin {

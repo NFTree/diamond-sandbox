@@ -5,10 +5,17 @@ import "../../../libraries/LibDiamond.sol";
 import "../sentinel/ISentinelFacet.sol";
 import "../../../guardian/IGuardian.sol";
 
-
+// This facet allows any set sentinels to make calls to any contract through the gnosis safe
 contract ArbitrateFacet {
+    event CallAbitrated (
+        address indexed _abitrator,
+        address _to,
+        bytes _calldata
+    );
+
     constructor() {}
 
+    //This checks if the caller is a guardian or admin address
     modifier canCall() {
         bool isGuardian = ISentinelFacet(address(this)).isGuardian(msg.sender);
         bool isAdmin = ISentinelFacet(address(this)).isAdmin(msg.sender);
@@ -16,11 +23,8 @@ contract ArbitrateFacet {
         _;
     }
 
+    // This is the public call for people to execute transactions
     function doCall(address _contract, bytes memory _calldata) public canCall {
-        // maybe add returndatacopy and result
-        // _contract.delegatecall(_calldata);
-        
-        //Make delegate call with calldata
         IGuardian(address(this)).execute(
             _contract, //to
             0, //price
@@ -28,25 +32,6 @@ contract ArbitrateFacet {
             Enum.Operation.Call //0 = Call, 1 = DelegateCall
         );
 
-        //Make delegate call with calldata
-        // IGuardian(address(this)).exec(
-        //     _contract, //to
-        //     0, //price
-        //     _calldata, //calldata
-        //     Enum.Operation.DelegateCall //0 = Call, 1 = DelegateCall
-        // );
-
-        // abi.encodeCall(
-        //     IGuardian(address(this)).exec,
-        //     (
-        //         _contract, //to
-        //         0, //price
-        //         _calldata, //calldata
-        //         Enum.Operation.Call //0 = Call, 1 = DelegateCall
-        //     )
-        // );
-
-        //Send encoded exec() call to guardian with encoded delegate call
-        // delegatecall
+        emit CallAbitrated(msg.sender, _contract, _calldata);
     }
 }

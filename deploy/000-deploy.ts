@@ -15,6 +15,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const safeFactoryAddress = await hre.run("deploySafeFactory");
 
   // 2. predict address of safe to be deployed
+  // This is supplied to the guardian module
   console.log('');
   console.log('Predicting safe address...');
   const safeFactory = await ethers.getContractAt("SafeFactory", safeFactoryAddress);
@@ -43,8 +44,12 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   console.log(`guardian: ${guardianAddress}`);
   console.log(`safe: ${safeAddress}`);
 
-  //4. run some tests on our deployed guardian/facet
-  // await hre.run("testSentinelViaGuardian", { guardianaddr: guardianAddress });
+  //7. Change ownership to the safe for the module
+  await hre.run("transferOwnership", { guardianaddr: guardianAddress, safe: safeAddress });
+
+  console.log('');
+  console.log(`guardian: ${guardianAddress}`);
+  console.log(`safe: ${safeAddress}`);
 };
 
 export default func;

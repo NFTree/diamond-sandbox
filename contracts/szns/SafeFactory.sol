@@ -5,13 +5,12 @@ import "../interfaces/gnosis/IGnosisSafe.sol";
 import "../interfaces/gnosis/IGnosisSafeProxyFactory.sol";
 import "@openzeppelin/contracts/utils/Create2.sol";
 
-//Factory to create gnosis safes
+//Factory contract to create gnosis safes
 contract SafeFactory {
-    // event SafeCreated {
-
-    // }
+    event SafeCreated (address safe);
 
     address public immutable GNOSIS_SAFE_FALLBACK_HANDLER;
+    // This contains the address for the proxy template
     address public immutable GNOSIS_SAFE_SINGLETON_DEPLOYMENT;
     // This is called to deploy safe proxies
     IGnosisSafeProxyFactory public immutable GNOSIS_SAFE_PROXY_FACTORY_DEPLOYER;
@@ -42,8 +41,8 @@ contract SafeFactory {
         //2. setup()
         address[] memory owners = new address[](1);
 
-        // Update this to change owner. I just added my deployer address for testing purposes
-        owners[0] = 0x607dd6919b920309BF760376237C9b23A42979dA;
+        // TODO: Update this to change owner. I just added my deployer address for testing purposes
+        owners[0] = msg.sender;
         IGnosisSafe(address(safe)).setup(
             owners, //Owners
             1, //threshold
@@ -55,10 +54,12 @@ contract SafeFactory {
             payable(0) //payment receiver
         );
 
+        emit SafeCreated(address(safe));
+
         return address(safe);
     }
 
-    // Predict address of safe address using create2 standard
+    // Predict address of safe address using create2 standard for proxies
     function predictSafeAddress(bytes32 salt) public view returns (address predicted) {
         salt = keccak256(abi.encode(salt, msg.sender, address(this)));
         salt = keccak256(abi.encodePacked(keccak256(""), salt));
