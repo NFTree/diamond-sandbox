@@ -3,13 +3,20 @@ import { task, types } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { FacetCutAction, getSelectors } from "../../libraries/diamond";
 
+interface TaskArgs {
+  safe: string //address of the safe
+}
+
 //Deploys our guardian via diamond standard
-task("deployGuardianModule", "Deploy guardian module").setAction(async (_, hre: HardhatRuntimeEnvironment) => {
+task("deployGuardianModule", "Deploy guardian module")
+  .addParam("safe", "Safe address that will own this guardian module", undefined, types.string)
+  .setAction(async (args: TaskArgs, hre: HardhatRuntimeEnvironment) => {
     const { ethers } = hre;
-  
     const [caller] = await ethers.getSigners();
-    console.log("Using the account:", caller.address);
-  
+
+
+    const { safe } = args;
+
     // 1) deploy DiamondCutFacet
     // This exposes functions to add/update/remove functions on our diamond
     console.log('')
@@ -18,15 +25,16 @@ task("deployGuardianModule", "Deploy guardian module").setAction(async (_, hre: 
     const diamondCutFacet = await DiamondCutFacet.deploy()
     await diamondCutFacet.deployed()
     console.log('DiamondCutFacet deployed:', diamondCutFacet.address)
-  
+
     // 2) deploy Guardian module/diamond contract
     console.log('')
     console.log(`Deploying guardian module...`);
+    console.log(`Owner of guardian: ${safe}`)
     const Guardian = await ethers.getContractFactory('Guardian');
-    const guardian = await Guardian.deploy(caller.address, diamondCutFacet.address);
+    const guardian = await Guardian.deploy(caller.address, diamondCutFacet.address, safe);
     await guardian.deployed()
     console.log('Module deployed:', guardian.address)
-  
+
     // 3) deploy DiamondInit -- boilerplate
     // DiamondInit provides a function that is called when the diamond is upgraded to initialize state variables
     // Read about how the diamondCut function works here: https://eips.ethereum.org/EIPS/eip-2535#addingreplacingremoving-functions
@@ -36,7 +44,7 @@ task("deployGuardianModule", "Deploy guardian module").setAction(async (_, hre: 
     const diamondInit = await DiamondInit.deploy()
     await diamondInit.deployed()
     console.log('DiamondInit deployed:', diamondInit.address)
-  
+
     // 4) deploy facets
     // Deploy some facets we need to add to our diamond
     console.log('')
@@ -57,7 +65,7 @@ task("deployGuardianModule", "Deploy guardian module").setAction(async (_, hre: 
         functionSelectors: getSelectors(facet)
       })
     }
-  
+
     // upgrade diamond with facets
     console.log('')
     console.log('Diamond Cut:', cut)
@@ -80,5 +88,5 @@ task("deployGuardianModule", "Deploy guardian module").setAction(async (_, hre: 
     console.log(`Guardian deployed at: ${guardian.address}`)
     return guardian.address;
   });
-  
-  export { };
+
+export { };

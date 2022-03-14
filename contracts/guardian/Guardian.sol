@@ -5,27 +5,32 @@ import "@gnosis.pm/zodiac/contracts/core/Module.sol";
 
 import {LibDiamond} from "../libraries/LibDiamond.sol";
 import {IDiamondCut} from "../interfaces/IDiamondCut.sol";
+import "../facets/custom/sentinel/ISentinelFacet.sol";
 
 // Guardian diamond contract
 // we inherit Module so it can be added to Gnosis safes via zodiac
 contract Guardian is Module {
-    constructor(address _contractOwner, address _diamondCutFacet) payable {
-        //Boilerplate for diamond.sol 
+    modifier canCall() {
+        bool isGuardian = ISentinelFacet(address(this)).isGuardian(msg.sender);
+        bool isAdmin = ISentinelFacet(address(this)).isAdmin(msg.sender);
+        bool isThis = address(this) == msg.sender;
+        require(isGuardian || isAdmin || isThis, "Not authorized to call");
+        _;
+    }
+
+    constructor(address _contractOwner, address _diamondCutFacet, address safe) payable {
+        //Boilerplate for diamond.sol
         LibDiamond.setContractOwner(_contractOwner);
 
         // Add the diamondCut external function from the diamondCutFacet
         IDiamondCut.FacetCut[] memory cut = new IDiamondCut.FacetCut[](1);
         bytes4[] memory functionSelectors = new bytes4[](1);
         functionSelectors[0] = IDiamondCut.diamondCut.selector;
-        cut[0] = IDiamondCut.FacetCut({
-            facetAddress: _diamondCutFacet, 
-            action: IDiamondCut.FacetCutAction.Add, 
-            functionSelectors: functionSelectors
-        });
-        LibDiamond.diamondCut(cut, address(0), "");   
+        cut[0] = IDiamondCut.FacetCut({facetAddress: _diamondCutFacet, action: IDiamondCut.FacetCutAction.Add, functionSelectors: functionSelectors});
+        LibDiamond.diamondCut(cut, address(0), "");
 
         //Boilerplate for Module.sol
-        bytes memory initializeParams = abi.encode(_contractOwner);
+        bytes memory initializeParams = abi.encode(safe);
         setUp(initializeParams);
     }
 
@@ -58,19 +63,30 @@ contract Guardian is Module {
         assembly {
             // copy function selector and any arguments
             calldatacopy(0, 0, calldatasize())
-             // execute function call using the facet
+            // execute function call using the facet
             let result := delegatecall(gas(), facet, 0, calldatasize(), 0, 0)
             // get any return value
             returndatacopy(0, 0, returndatasize())
             // return any return value or error back to the caller
             switch result
-                case 0 {
-                    revert(0, returndatasize())
-                }
-                default {
-                    return(0, returndatasize())
-                }
+            case 0 {
+                revert(0, returndatasize())
+            }
+            default {
+                return(0, returndatasize())
+            }
         }
+    }
+
+    // We need to expose this since exec() in Module is internal
+    function execute(
+        address _to,
+        uint256 _value,
+        bytes memory _data,
+        Enum.Operation _operation
+    ) public canCall returns (bool success) {
+        success = exec(_to, _value, _data, _operation);
+        return success;
     }
 
     //Boilerplate for diamond.sol

@@ -3,15 +3,9 @@ import { task, types } from "hardhat/config";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { getFallbackHandlerDeployment, getProxyFactoryDeployment, getSafeSingletonDeployment } from "@gnosis.pm/safe-deployments";
 
-interface TaskArgs {
-    name: string
-    moduleaddress: string
-}
-
 //Deploys a gnosis safe
-task("deploySafe", "Creates a gnosis safe wallet")
-    .addParam("name", "Name for this safe", undefined, types.string)
-    .setAction(async (args: TaskArgs, hre: HardhatRuntimeEnvironment) => {
+task("deploySafeFactory", "Deploy the gnosis safe factory")
+    .setAction(async (_, hre: HardhatRuntimeEnvironment) => {
         const { ethers } = hre;
         const [caller] = await ethers.getSigners();
 
@@ -26,16 +20,5 @@ task("deploySafe", "Creates a gnosis safe wallet")
         await safeFactory.deployed()
         console.log('SafeFactory deployed:', safeFactory.address)
 
-        console.log('');
-        console.log("Creating safe");
-        const salt = ethers.utils.keccak256(ethers.utils.defaultAbiCoder.encode(["string", "address[]"], [args.name, [caller.address]]));
-        const safeTxn = await safeFactory.createSafe(salt);
-        let safeReceipt = await safeTxn.wait();
-        if (!safeReceipt.status) {
-            throw Error(`Gnosis safe create failed: ${safeTxn.hash}`)
-        }
-
-        console.log('');
-        console.log(`Finish creating gnosis safe ${safeReceipt.events[2].address}`)
-        return safeReceipt.events[2].address;
+        return safeFactory.address;
     });
